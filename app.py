@@ -12,16 +12,37 @@ except FileNotFoundError:
 
 
 # --- Interfaz de Usuario ---
+def st_info_centered(text, icon="ℹ️"): # Añadimos un parámetro 'icon' con un emoji por defecto
+    """
+    Muestra un cuadro de información con el texto centrado y un ícono (emoji).
+    
+    Args:
+        text (str): El texto a mostrar.
+        icon (str): El emoji Unicode a usar como ícono. Ejemplos: "⚠️", "💡", "🧠", "✅".
+    """
+    st.markdown(f"""
+    <div style="background-color: #325A78; border-radius: 0.5rem; padding: 1rem; margin: 1rem 0">
+        <p style="text-align: center; margin-bottom: 0;">
+            {icon} {text}  </p>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.set_page_config(page_title="Evaluador de Bienestar Estudiantil", layout="wide")
 
-st.title('Evaluador de Bienestar Estudiantil 🧠')
+st.markdown("<h1 style='text-align: center;'>Evaluador de Bienestar Estudiantil 🧠</h1>", unsafe_allow_html=True)
 
+st.write(" ")
 st.write("""
 Esta herramienta te ayuda a comprender tu posible nivel de riesgo de ansiedad y depresión en comparación con otros estudiantes. 
 Por favor, responde a las preguntas en el panel de la izquierda, de la manera más honesta posible. Luego, haz clic en 'Obtener Evaluación' para obtener tu resultado.
 
 """)
-st.info("**Importante:** Esta es una herramienta de orientación y no reemplaza un diagnóstico médico o psicológico profesional.", icon="⚠️")
+st_info_centered("Importante: Esta es una herramienta de orientación y no reemplaza un diagnóstico médico o psicológico profesional.",icon="⚠️")
+st.markdown("---")
+
+#st.markdown("<div style='text-align: center;'>Si estas en un dispositivo movil dale a las flechas de arriba a la izquierda para ver las preguntas<div>",unsafe_allow_html=True)
+st_info_centered("Si estás en un dispositivo móvil dale a las flechas de arriba a la izquierda para ver las preguntas")
+
 st.markdown("---")
 
 
