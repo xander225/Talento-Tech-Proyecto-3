@@ -6,18 +6,27 @@ import joblib
 model = joblib.load('modelo_forest.joblib')
 scaler = joblib.load('scaler.joblib')
 
+# HARDCODEAR las medias y desviaciones estándar de tus datos de entrenamiento
+# (Reemplaza con los valores que obtuviste de tu Colab)
+GLOBAL_MEAN_ANXIETY = 11.06 # Ejemplo: Reemplaza con tu valor real
+GLOBAL_STD_ANXIETY = 6.12  # Ejemplo: Reemplaza con tu valor real
+GLOBAL_MEAN_DEPRESSION = 12.56 # Ejemplo: Reemplaza con tu valor real
+GLOBAL_STD_DEPRESSION = 7.73   # Ejemplo: Reemplaza con tu valor real
+
 # Título de la aplicación
-st.title('Predictor de Niveles de Ansiedad y Depresión')
+st.title('Evaluación de Riesgo de Ansiedad y Depresión en Estudiantes') # Título un poco más descriptivo
 
 st.write("""
 Por favor, responde a las siguientes preguntas en una escala. 
-Esto es una herramienta de orientación y no reemplaza un diagnóstico profesional.
+Esta herramienta proporciona una orientación basada en datos y **no reemplaza un diagnóstico profesional**.
 """)
 
 # Crear sliders para cada característica en el sidebar
 st.sidebar.header('Parámetros de Entrada del Usuario')
 
 def user_input_features():
+    # Asegúrate de que los rangos (min_value, max_value) y el valor por defecto (value)
+    # sean apropiados para tus datos y la escala de cada característica.
     self_esteem = st.sidebar.slider('Autoestima (Self Esteem)', 0, 25, 10)
     mental_health_history = st.sidebar.slider('Historial de Salud Mental (0: No, 1: Sí)', 0, 1, 0)
     sleep_quality = st.sidebar.slider('Calidad del Sueño', 0, 5, 3)
@@ -56,21 +65,50 @@ def user_input_features():
 # Obtener la entrada del usuario
 input_df = user_input_features()
 
-# Mostrar la entrada del usuario
-st.subheader('Tus respuestas:')
-st.write(input_df)
+# --- INICIO DE CAMBIOS ---
+
+# st.subheader('Tus respuestas:') # Eliminado
+# st.write(input_df) # Eliminado
+
+# Función para describir la posición en la campana de Gauss
+def describe_position(score, mean, std, condition_name):
+    st.write(f"### Nivel de {condition_name} Predicho: {score:.2f}")
+
+    if score < mean - 1.5 * std:
+        st.info(f"Tu nivel de {condition_name} está **significativamente por debajo del promedio** de los estudiantes en nuestro estudio. Esto sugiere un bienestar notable en este aspecto.")
+        st.image('https://i.imgur.com/k9b6G9r.png') # Puedes cambiar esto por una imagen local o URL de un indicador bajo
+    elif score < mean - 0.5 * std:
+        st.info(f"Tu nivel de {condition_name} está **ligeramente por debajo del promedio**. Indica un buen manejo en comparación con la mayoría.")
+        st.image('https://i.imgur.com/k9b6G9r.png') # Puedes cambiar esto por una imagen local o URL de un indicador bajo
+    elif score < mean + 0.5 * std:
+        st.warning(f"Tu nivel de {condition_name} está **dentro del rango promedio** de los estudiantes en nuestro estudio. Es similar a la experiencia de la mayoría.")
+        st.image('https://i.imgur.com/lJ4W7Pq.png') # Puedes cambiar esto por una imagen local o URL de un indicador medio
+    elif score < mean + 1.5 * std:
+        st.warning(f"Tu nivel de {condition_name} está **ligeramente por encima del promedio**. Podría indicar que experimentas más desafíos en esta área que la mayoría.")
+        st.image('https://i.imgur.com/H6x56yB.png') # Puedes cambiar esto por una imagen local o URL de un indicador alto
+    else:
+        st.error(f"Tu nivel de {condition_name} está **significativamente por encima del promedio**. Esto sugiere un riesgo elevado o una necesidad de atención en este aspecto.")
+        st.image('https://i.imgur.com/H6x56yB.png') # Puedes cambiar esto por una imagen local o URL de un indicador muy alto
+    st.markdown("---")
+
 
 # Cuando el usuario presione el botón, hacer la predicción
-if st.button('Predecir'):
+if st.button('Obtener Evaluación'): # Cambié el texto del botón
     # Escalar los datos de entrada
     input_scaled = scaler.transform(input_df)
     
     # Hacer la predicción
     prediction = model.predict(input_scaled)
     
-    # Mostrar el resultado
-    st.subheader('Resultados de la Predicción')
-    st.write(f"**Nivel de Ansiedad Predicho:** {prediction[0][0]:.2f}")
-    st.write(f"**Nivel de Depresión Predicho:** {prediction[0][1]:.2f}")
+    # Mostrar el resultado de forma descriptiva
+    st.subheader('Resultados de tu Evaluación:')
+    
+    # Llamar a la función descriptiva para Ansiedad
+    describe_position(prediction[0][0], GLOBAL_MEAN_ANXIETY, GLOBAL_STD_ANXIETY, "Ansiedad")
+    
+    # Llamar a la función descriptiva para Depresión
+    describe_position(prediction[0][1], GLOBAL_MEAN_DEPRESSION, GLOBAL_STD_DEPRESSION, "Depresión")
 
-    st.success('Predicción realizada con éxito!')
+    st.success('Evaluación completada. Recuerda que esto es una orientación.')
+
+# --- FIN DE CAMBIOS ---
