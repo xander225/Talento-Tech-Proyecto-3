@@ -33,7 +33,7 @@ st.markdown("<h1 style='text-align: center;'>Evaluador de Bienestar Estudiantil 
 
 st.write(" ")
 st.markdown("""<p style='text-align: justify;'>
-Esta herramienta te ayuda a comprender tu posible nivel de riesgo de ansiedad y depresión en comparación con otros estudiantes. 
+Esta herramienta te ayuda a comprender tu posible nivel de riesgo de padecer ansiedad o depresión mediante predicciones basadas en datos registrados de otros estudiantes. 
 Por favor, responde a las preguntas en el panel de la izquierda, de la manera más honesta posible. Luego, haz clic en 'Obtener Evaluación' para obtener tu resultado.
 
 """, unsafe_allow_html=True)
